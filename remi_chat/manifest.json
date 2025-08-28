@@ -1,0 +1,30 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Luna Chatみたいなやつ",
+    "description": "by remiria",
+    "min_engine_version": [1, 21, 10],
+    "uuid": "adaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa",
+    "version": [1, 1, 0]
+  },
+  "modules": [
+    {
+      "description": "",
+      "type": "script",
+      "language": "javascript",
+      "uuid": "e4419838-e507-4b1a-9e4a-f3038197c421",
+      "version": [0, 1, 11],
+      "entry": "scripts/index.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "mojang-minecraft",
+      "version": "0.1.0"
+    },
+    {
+      "module_name": "mojang-minecraft-ui",
+      "version": "0.1.0"
+    }
+  ]
+}
