@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GensokyoRadioRapper</title>
+    <style>
+      .song {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .song img {
+        width: 200px;
+        border-radius: 16px;
+        opacity: 0.5;
+      }
+      .songInfo {
+        text-align: right;
+      }
+      body {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        font-family: Unifont;
+        padding: 20px;
+        color: #fff;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="song">
+      <div class="songInfo">
+        <h2 id="title">-</h2>
+        <p style="color: #aaa" id="year">-</p>
+        <p id="artist">-</p>
+      </div>
+      <img id="albumArt" src="" alt="Album Art" />
+    </div>
+    <script>
+      const wsUrl = "wss://gensokyoradio.net/wss";
+      let clientId = null;
+      let audio = new Audio("https://stream.gensokyoradio.net/3/");
+      audio.volume = 16 / 100;
+      audio.play();
+
+      function updateSong(song) {
+        console.dir(song, { depth: null });
+        document.getElementById("title").textContent = song.title;
+        document.getElementById("artist").textContent = song.artist;
+        document.getElementById("year").textContent = `(${song.year})`;
+        document.getElementById("albumArt").src = `${song.albumArt}`;
+        audio.currentTime = audio.duration;
+      }
+
+      function connectWS() {
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+          console.log("WebSocket connected");
+          ws.send(JSON.stringify({ message: "grInitialConnection" }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            if (data.message) {
+              if (data.message === "welcome") {
+                clientId = data.id;
+                console.log("WebSocket client is ready! ID:", clientId);
+              } else if (data.message === "ping") {
+                ws.send(JSON.stringify({ message: "pong", id: clientId }));
+              }
+            } else if (data.songid) {
+              const song = {
+                title: data.title ?? "-",
+                artist: data.artist ?? "-",
+                albumArt: data.albumart ?? "",
+                year: data.year ?? "",
+              };
+              updateSong(song);
+              console.log("Song changed:", song.title);
+            }
+          } catch (err) {
+            console.warn("Invalid WebSocket message:", event.data, err);
+          }
+        };
+
+        ws.onclose = (event) => {
+          console.log("WebSocket closed, retrying in 10s", event);
+          setTimeout(connectWS, 10000);
+        };
+
+        ws.onerror = (err) => {
+          console.error("WebSocket error:", err);
+        };
+      }
+      connectWS();
+    </script>
+  </body>
+</html>
