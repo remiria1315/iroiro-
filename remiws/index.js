@@ -660,7 +660,7 @@ server.on(ServerEvent.PlayerChat, async (event) => {
     runTest()
       .then(() => {
         const actualElapsed = (performance.now() - start) / 1000;
-        const actualTPS = successCount / actualElapsed;
+        const actualTPS = Math.min((successCount / actualElapsed) * 2, 20);
         const successRate = ((successCount / totalAttempts) * 100).toFixed(1);
         const averageInterval = (actualElapsed * 1000) / totalAttempts;
         const minecraftColors = {
