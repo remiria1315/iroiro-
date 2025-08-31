@@ -19,7 +19,6 @@ app.whenReady().then(() => {
     movable: false,
     webPreferences: { nodeIntegration: true },
   });
-
   win.loadFile("index.html");
   win.setIgnoreMouseEvents(true, { forward: true });
   win.setBounds({
